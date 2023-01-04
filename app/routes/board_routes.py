@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, abort
 from app import db
 from app.models.board import Board
 
@@ -48,3 +48,29 @@ def read_all_boards():
         )
     return jsonify(boards_response)
 
+# validate board helper function
+def validate_board(board_id):
+    try:
+        board_id = int(board_id)
+    except:
+        abort(make_response({"details": "Invalid Data, id must be a number"}, 400))
+    
+    board = Board.query.get(board_id)
+    print("Board test print", board)
+    if not board:
+        abort(make_response({"details": f"There is no existing board {board_id}"}, 400))
+    
+    return board
+
+# Get ONE Board
+@boards_bp.route("/<board_id>", methods=["GET"])
+def read_one_board(board_id):    
+    board = validate_board(board_id)
+
+    return {
+        "board" : {
+            "id": board.board_id,
+            "title": board.title,
+            "owner": board.owner
+        }
+    }
