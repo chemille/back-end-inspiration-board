@@ -6,7 +6,6 @@ from app.models.board import Board
 boards_bp = Blueprint("board", __name__, url_prefix="/boards")
 
 # Create a New Board -> post method
-
 @boards_bp.route("", methods=["POST"])
 def create_board():
     request_body = request.get_json()
@@ -31,3 +30,21 @@ def create_board():
             "owner": new_board.owner
         }
     }, 201
+
+# Get ALL Boards
+@boards_bp.route("", methods=["GET"])
+def read_all_boards():
+
+    boards = Board.query.all()
+    boards_response = []
+
+    for board in boards:
+        boards_response.append(
+            {
+            "id": board.board_id,
+            "title": board.title,
+            "owner": board.owner
+            }
+        )
+    return jsonify(boards_response)
+
