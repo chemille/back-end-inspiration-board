@@ -74,3 +74,18 @@ def read_one_board(board_id):
             "owner": board.owner
         }
     }
+
+# Delete a Board
+@boards_bp.route("/<board_id>", methods=["DELETE"])
+def delete_board(board_id):
+    board = validate_board(board_id)
+
+    db.session.delete(board)
+    db.session.commit()
+
+    # return {
+    #     "details": f'Board {board.title} owned by {board.owner} successfully deleted'
+    # }
+    return {
+        "details": f'Board {board.title} successfully deleted'
+    }
