@@ -98,9 +98,7 @@ def update_likes(card_id):
     card.likes_count = request_body["likes_count"]
 
     card.likes_count = int(card.likes_count) + 1
-    # print("LIKE COUNT", card.likes_count)
-    # print("TYPE", type(card.likes_count))
-
+    
     db.session.commit()
     
     return {

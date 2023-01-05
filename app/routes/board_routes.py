@@ -21,8 +21,7 @@ def create_board():
     db.session.add(new_board)
     db.session.commit()
 
-    # return make_response(f"Board {new_board.title} has been successfully created", 201)
-    # we also can send back the entire dictionary (new board) as confirmation to the client
+    
     return {
         "board" : {
             "id": new_board.board_id,
@@ -88,3 +87,10 @@ def delete_board(board_id):
     return {
         "details": f'Board {board.title} successfully deleted'
     }
+
+# --------------------------- NESTED ROUTES ------------------------------
+
+# Get cards for specific board (by id)
+@boards_bp.route("/<board_id>", methods=["GET"])
+def read_one_board(board_id):    
+    board = validate_board(board_id)
