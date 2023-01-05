@@ -72,3 +72,19 @@ def read_one_card(card_id):
             "likes_count": card.likes_count
         }
     }
+
+
+# Delete a card
+@cards_bp.route("/<card_id>", methods=["DELETE"])
+def delete_card(card_id):
+    card = validate_card(card_id)
+
+    db.session.delete(card)
+    db.session.commit()
+
+    # return {
+    #     "details": f'card {card.title} owned by {card.owner} successfully deleted'
+    # }
+    return {
+        "details": f'Card {card.card_id} successfully deleted'
+    }
