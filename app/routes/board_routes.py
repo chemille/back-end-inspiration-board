@@ -56,7 +56,6 @@ def validate_board(board_id):
         abort(make_response({"details": "Invalid Data, id must be a number"}, 400))
     
     board = Board.query.get(board_id)
-    print("Board test print", board)
     if not board:
         abort(make_response({"details": f"There is no existing board {board_id}"}, 400))
     

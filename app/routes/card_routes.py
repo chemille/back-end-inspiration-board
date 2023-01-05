@@ -27,3 +27,48 @@ def create_card():
             "likes_count": new_card.likes_count
         }
     }, 201
+
+
+# Get ALL cards
+@cards_bp.route("", methods=["GET"])
+def read_all_cards():
+
+    cards = Card.query.all()
+    cards_response = []
+
+    for card in cards:
+        cards_response.append(
+            {
+                "id": card.card_id,
+                "message": card.message,
+                "likes_count": card.likes_count
+            }
+        )
+    return jsonify(cards_response)
+
+# Validate Card helper function
+def validate_card(card_id):
+    try:
+        card_id = int(card_id)
+    except:
+        abort(make_response({"details": "Invalid Data, id must be a number"}, 400))
+    
+    card = Card.query.get(card_id)
+    print("card test print", card)
+    if not card:
+        abort(make_response({"details": f"There is no existing card {card_id}"}, 400))
+    
+    return card
+
+# Get ONE Card
+@cards_bp.route("/<card_id>", methods=["GET"])
+def read_one_card(card_id):
+    card = validate_card(card_id)
+
+    return {
+        "card": {
+            "id": card.card_id,
+            "messsage": card.message,
+            "likes_count": card.likes_count
+        }
+    }
