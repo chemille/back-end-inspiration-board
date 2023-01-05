@@ -91,6 +91,6 @@ def delete_board(board_id):
 # --------------------------- NESTED ROUTES ------------------------------
 
 # Get cards for specific board (by id)
-@boards_bp.route("/<board_id>", methods=["GET"])
-def read_one_board(board_id):    
-    board = validate_board(board_id)
+# @boards_bp.route("/<board_id>", methods=["GET"])
+# def read_one_board(board_id):    
+#     board = validate_board(board_id)
