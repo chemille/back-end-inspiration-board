@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response, abort
 from app import db
 from app.models.board import Board
+from app.models.card import Card
 
 # example_bp = Blueprint('example_bp', __name__)
 boards_bp = Blueprint("boards", __name__, url_prefix="/boards")
@@ -90,7 +91,50 @@ def delete_board(board_id):
 
 # --------------------------- NESTED ROUTES ------------------------------
 
-# Get cards for specific board (by id)
-# @boards_bp.route("/<board_id>", methods=["GET"])
-# def read_one_board(board_id):    
+# create a new card to a board by id
+
+@boards_bp.route("/<board_id>/cards", methods=["POST"])
+def create_card_to_board(board_id):   
+
+    board = validate_board(board_id)
+
+    request_body = request.get_json()
+    try:
+        new_card = Card(
+            message=request_body["message"],
+            likes_count=request_body["likes_count"],
+            board=board
+        )
+    except KeyError:
+        return {"details": "Missing Data"}, 400
+    
+    db.session.add(new_card)
+    db.session.commit()
+
+    return {
+        "card" : {
+            "id": new_card.card_id,
+            "message": new_card.message,
+            "likes_count": new_card.likes_count,
+            "board_id": new_card.board_id
+        }
+    }, 201
+
+# grabbing all cards by a specific board
+# @boards_bp.route("/boards/<board_id>/cards", methods=["GET"])
+
+# def get_all_cards_by_board(board_id):
+
 #     board = validate_board(board_id)
+
+#     cards_response = []
+
+#     for card in board.cards:
+#         cards_response.append(
+#             {
+#                 "id": card.card_id,
+#                 "message": card.message,
+#                 "likes_count": card.likes_count,
+#                 "board_id": card.board_id
+#             }
+#         )
