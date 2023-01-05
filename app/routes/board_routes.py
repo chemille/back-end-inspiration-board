@@ -120,21 +120,21 @@ def create_card_to_board(board_id):
         }
     }, 201
 
-# grabbing all cards by a specific board
-# @boards_bp.route("/boards/<board_id>/cards", methods=["GET"])
+# GET all cards by a specific board
+@boards_bp.route("/<board_id>/cards", methods=["GET"])
+def read_all_cards_by_board(board_id):
 
-# def get_all_cards_by_board(board_id):
+    board = validate_board(board_id)
 
-#     board = validate_board(board_id)
+    cards_response = []
 
-#     cards_response = []
-
-#     for card in board.cards:
-#         cards_response.append(
-#             {
-#                 "id": card.card_id,
-#                 "message": card.message,
-#                 "likes_count": card.likes_count,
-#                 "board_id": card.board_id
-#             }
-#         )
+    for card in board.cards:
+        cards_response.append(
+            {
+                "id": card.card_id,
+                "message": card.message,
+                "likes_count": card.likes_count,
+                "board_id": card.board_id
+            }
+        )
+    return jsonify(cards_response)

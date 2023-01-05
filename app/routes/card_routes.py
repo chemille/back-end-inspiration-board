@@ -12,7 +12,8 @@ def create_card():
     try:
         new_card = Card(
             message=request_body["message"],
-            likes_count=request_body["likes_count"]
+            likes_count=request_body["likes_count"],
+            board_id=request_body["board_id"]
         )
     except KeyError:
         return {"details": "Missing Data"}, 400
@@ -24,7 +25,8 @@ def create_card():
         "card" : {
             "id": new_card.card_id,
             "message": new_card.message,
-            "likes_count": new_card.likes_count
+            "likes_count": new_card.likes_count,
+            "board_id": new_card.board_id
         }
     }, 201
 
@@ -82,9 +84,7 @@ def delete_card(card_id):
     db.session.delete(card)
     db.session.commit()
 
-    # return {
-    #     "details": f'card {card.title} owned by {card.owner} successfully deleted'
-    # }
+   
     return {
         "details": f'Card {card.card_id} successfully deleted'
     }
