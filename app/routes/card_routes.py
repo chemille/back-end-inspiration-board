@@ -88,3 +88,25 @@ def delete_card(card_id):
     return {
         "details": f'Card {card.card_id} successfully deleted'
     }
+
+# Update likes
+@cards_bp.route("/<card_id>/like", methods=["PUT"])
+def update_likes(card_id):
+    card = validate_card(card_id)
+
+    request_body =request.get_json()
+    card.likes_count = request_body["likes_count"]
+
+    card.likes_count = int(card.likes_count) + 1
+    # print("LIKE COUNT", card.likes_count)
+    # print("TYPE", type(card.likes_count))
+
+    db.session.commit()
+    
+    return {
+        "card": {
+            "id": card.card_id,
+            "messsage": card.message,
+            "likes_count": card.likes_count 
+        }
+    }
