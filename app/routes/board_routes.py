@@ -38,7 +38,7 @@ def create_board():
 @boards_bp.route("", methods=["GET"])
 def read_all_boards():
     # we might need to order because of the way they're listed in the boards
-    # cards = Board.query.order_by(Board.board_id).all()
+    # boards = Board.query.order_by(Board.board_id).all()
     boards = Board.query.all()
     boards_response = [board.to_dict() for board in boards]
 
