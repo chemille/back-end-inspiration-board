@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, make_response, abort
 from app import db
 from app.models.board import Board
 from app.models.card import Card
+from app.routes.routes_helper import validate_model
 
 # example_bp = Blueprint('example_bp', __name__)
 boards_bp = Blueprint("boards", __name__, url_prefix="/boards")
@@ -48,23 +49,11 @@ def read_all_boards():
         )
     return jsonify(boards_response)
 
-# validate board helper function
-def validate_board(board_id):
-    try:
-        board_id = int(board_id)
-    except:
-        abort(make_response({"details": "Invalid Data, id must be a number"}, 400))
-    
-    board = Board.query.get(board_id)
-    if not board:
-        abort(make_response({"details": f"There is no existing board {board_id}"}, 400))
-    
-    return board
-
 # Get ONE Board
 @boards_bp.route("/<board_id>", methods=["GET"])
 def read_one_board(board_id):    
-    board = validate_board(board_id)
+    board = validate_model(Board, board_id)
+    # board = validate_board(board_id)
 
     return {
         "board" : {
@@ -77,26 +66,21 @@ def read_one_board(board_id):
 # Delete a Board
 @boards_bp.route("/<board_id>", methods=["DELETE"])
 def delete_board(board_id):
-    board = validate_board(board_id)
+    board = validate_model(Board, board_id)
+    # board = validate_board(board_id)
 
     db.session.delete(board)
     db.session.commit()
 
-    # return {
-    #     "details": f'Board {board.title} owned by {board.owner} successfully deleted'
-    # }
-    return {
-        "details": f'Board {board.title} successfully deleted'
-    }
+    return make_response({"details": f'{board.title} {board.board_id} successfully deleted'})
 
 # --------------------------- NESTED ROUTES ------------------------------
 
 # create a new card to a board by id
-
 @boards_bp.route("/<board_id>/cards", methods=["POST"])
 def create_card_to_board(board_id):   
-
-    board = validate_board(board_id)
+    board = validate_model(Board, board_id)
+    # board = validate_board(board_id)
 
     request_body = request.get_json()
     try:
@@ -121,10 +105,10 @@ def create_card_to_board(board_id):
     }, 201
 
 # GET all cards by a specific board
-@boards_bp.route("/<board_id>/cards", methods=["GET"])
+@boards_bp.route("<board_id>/cards", methods=["GET"])
 def read_all_cards_by_board(board_id):
-
-    board = validate_board(board_id)
+    board = validate_model(Board, board_id)
+    # board = validate_board(board_id)
 
     cards_response = []
 

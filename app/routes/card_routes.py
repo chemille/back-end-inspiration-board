@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response, abort
 from app import db
 from app.models.card import Card
+from app.routes.routes_helper import validate_model
 
 cards_bp = Blueprint("cards", __name__, url_prefix="/cards")
 
@@ -48,24 +49,12 @@ def read_all_cards():
         )
     return jsonify(cards_response)
 
-# Validate Card helper function
-def validate_card(card_id):
-    try:
-        card_id = int(card_id)
-    except:
-        abort(make_response({"details": "Invalid Data, id must be a number"}, 400))
-    
-    card = Card.query.get(card_id)
-    print("card test print", card)
-    if not card:
-        abort(make_response({"details": f"There is no existing card {card_id}"}, 400))
-    
-    return card
 
 # Get ONE Card
 @cards_bp.route("/<card_id>", methods=["GET"])
 def read_one_card(card_id):
-    card = validate_card(card_id)
+    card = validate_model(Card, card_id)
+    # card = validate_card(card_id)
 
     return {
         "card": {
@@ -79,7 +68,8 @@ def read_one_card(card_id):
 # Delete a card
 @cards_bp.route("/<card_id>", methods=["DELETE"])
 def delete_card(card_id):
-    card = validate_card(card_id)
+    card = validate_model(Card, card_id)
+    # card = validate_card(card_id)
 
     db.session.delete(card)
     db.session.commit()
@@ -90,9 +80,10 @@ def delete_card(card_id):
     }
 
 # Update likes
-@cards_bp.route("/<card_id>/like", methods=["PUT"])
+@cards_bp.route("/<card_id>/likes", methods=["PUT"])
 def update_likes(card_id):
-    card = validate_card(card_id)
+    card = validate_model(Card, card_id)
+    # card = validate_card(card_id)
 
     request_body =request.get_json()
     card.likes_count = request_body["likes_count"]
