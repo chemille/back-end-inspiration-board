@@ -1,8 +1,8 @@
-"""empty message
+"""new migrations folder for deployment prep
 
-Revision ID: b216e76999db
+Revision ID: 0cb494361a6b
 Revises: 
-Create Date: 2023-01-04 11:09:30.396048
+Create Date: 2023-01-06 12:08:00.223858
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b216e76999db'
+revision = '0cb494361a6b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,6 +28,8 @@ def upgrade():
     sa.Column('card_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('message', sa.String(), nullable=True),
     sa.Column('likes_count', sa.Integer(), nullable=True),
+    sa.Column('board_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['board_id'], ['board.board_id'], ),
     sa.PrimaryKeyConstraint('card_id')
     )
     # ### end Alembic commands ###
