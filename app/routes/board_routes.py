@@ -7,45 +7,48 @@ from app.models.card import Card
 boards_bp = Blueprint("boards", __name__, url_prefix="/boards")
 
 # Create a New Board -> post method
+
 @boards_bp.route("", methods=["POST"])
 def create_board():
     request_body = request.get_json()
     
     try:
-        new_board = Board(
-            title=request_body["title"],
-            owner=request_body["owner"]
-        )
+        new_board = Board.from_dict(request_body)
+        # new_board = Board(
+        #     title=request_body["title"],
+        #     owner=request_body["owner"]
+        # )
     except KeyError:
         return {"details": "Missing Data"}, 400
 
     db.session.add(new_board)
     db.session.commit()
 
-    
-    return {
-        "board" : {
-            "id": new_board.board_id,
-            "title": new_board.title,
-            "owner": new_board.owner
-        }
-    }, 201
+    return jsonify(new_board.to_dict()), 201
+    # return {
+    #     "board" : {
+    #         "id": new_board.board_id,
+    #         "title": new_board.title,
+    #         "owner": new_board.owner
+    #     }
+    # }, 201
 
 # Get ALL Boards
 @boards_bp.route("", methods=["GET"])
 def read_all_boards():
-
+    # we might need to order because of the way they're listed in the boards
+    # cards = Board.query.order_by(Board.board_id).all()
     boards = Board.query.all()
-    boards_response = []
+    boards_response = [board.to_dict() for board in boards]
 
-    for board in boards:
-        boards_response.append(
-            {
-            "id": board.board_id,
-            "title": board.title,
-            "owner": board.owner
-            }
-        )
+    # for board in boards:
+    #     boards_response.append(
+    #         {
+    #         "id": board.board_id,
+    #         "title": board.title,
+    #         "owner": board.owner
+    #         }
+    #     )
     return jsonify(boards_response)
 
 # validate board helper function
@@ -66,13 +69,15 @@ def validate_board(board_id):
 def read_one_board(board_id):    
     board = validate_board(board_id)
 
-    return {
-        "board" : {
-            "id": board.board_id,
-            "title": board.title,
-            "owner": board.owner
-        }
-    }
+    return board.to_dict()
+
+    # return {
+    #     "board" : {
+    #         "id": board.board_id,
+    #         "title": board.title,
+    #         "owner": board.owner
+    #     }
+    # }
 
 # Delete a Board
 @boards_bp.route("/<board_id>", methods=["DELETE"])
@@ -100,25 +105,28 @@ def create_card_to_board(board_id):
 
     request_body = request.get_json()
     try:
-        new_card = Card(
-            message=request_body["message"],
-            likes_count=request_body["likes_count"],
-            board=board
-        )
+        new_card= Card.from_dict(request_body)
+        # new_card = Card(
+        #     message=request_body["message"],
+        #     likes_count=request_body["likes_count"],
+        #     board=board
+        # )
     except KeyError:
         return {"details": "Missing Data"}, 400
     
     db.session.add(new_card)
     db.session.commit()
 
-    return {
-        "card" : {
-            "id": new_card.card_id,
-            "message": new_card.message,
-            "likes_count": new_card.likes_count,
-            "board_id": new_card.board_id
-        }
-    }, 201
+    return new_card.to_dict(), 201
+
+    # return {
+    #     "card" : {
+    #         "id": new_card.card_id,
+    #         "message": new_card.message,
+    #         "likes_count": new_card.likes_count,
+    #         "board_id": new_card.board_id
+    #     }
+    # }, 201
 
 # GET all cards by a specific board
 @boards_bp.route("/<board_id>/cards", methods=["GET"])
@@ -126,15 +134,15 @@ def read_all_cards_by_board(board_id):
 
     board = validate_board(board_id)
 
-    cards_response = []
+    cards_response = [card.to_dict() for card in board.cards]
 
-    for card in board.cards:
-        cards_response.append(
-            {
-                "id": card.card_id,
-                "message": card.message,
-                "likes_count": card.likes_count,
-                "board_id": card.board_id
-            }
-        )
+    # for card in board.cards:
+    #     cards_response.append(
+    #         {
+    #             "id": card.card_id,
+    #             "message": card.message,
+    #             "likes_count": card.likes_count,
+    #             "board_id": card.board_id
+    #         }
+    #     )
     return jsonify(cards_response)
